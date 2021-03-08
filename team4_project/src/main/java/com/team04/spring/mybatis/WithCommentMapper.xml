@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="withComment">
+	<select id="getList" parameterType="int" resultType="withCommentDto">
+		SELECT *
+		FROM
+			(SELECT result1.*, ROWNUM AS rnum
+			FROM
+				(SELECT num, writer, content, target_id, ref_group,
+					comment_group, deleted, TO_CHAR(board_with_comment.regdate, 'YY.MM.DD HH24:MI') AS regdate, profile
+				FROM board_with_comment
+				INNER JOIN users
+				ON board_with_comment.writer=users.id
+				WHERE ref_group=#{ref_group}
+				ORDER BY comment_group DESC, num ASC) result1)
+		WHERE rnum BETWEEN #{startRowNum} AND #{endRowNum}		
+	</select>
+	<insert id="insert" parameterType="withCommentDto">
+		INSERT INTO board_with_comment
+		(num, writer, content, target_id, ref_group, comment_group, regdate)
+		VALUES(#{num}, #{writer}, #{content}, #{target_id}, #{ref_group},
+			#{comment_group}, SYSDATE)
+	</insert>
+	<update id="update" parameterType="withCommentDto">
+		UPDATE board_with_comment
+		SET content=#{content}
+		WHERE num=#{num}		
+	</update>
+	<delete id="delete" parameterType="int">
+		UPDATE board_with_comment
+		SET deleted='yes'
+		WHERE num=#{num}
+	</delete>
+	<select id="getSequence" resultType="int">
+		SELECT board_with_comment_seq.NEXTVAL
+		FROM DUAL
+	</select>
+		<select id="getData" parameterType="int" resultType="withCommentDto">
+		SELECT num,writer,content,ref_group,comment_group,deleted,
+			TO_CHAR(regdate, 'YY.MM.DD HH24:MI') AS regdate
+		FROM board_with_comment
+		WHERE num=#{num}
+	</select>
+	<select id="getCount" parameterType="int" resultType="int">
+		SELECT NVL(MAX(ROWNUM), 0)
+		FROM board_with_comment
+		WHERE ref_group=#{ref_group}
+	</select>
+</mapper>

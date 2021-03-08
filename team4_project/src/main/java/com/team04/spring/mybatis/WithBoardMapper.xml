@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="withboard">
+	<update id="addViewCount" parameterType="int">
+		UPDATE board_with
+		SET viewCount=viewCount+1
+		WHERE num=#{num}
+	</update>
+	<delete id="delete" parameterType="int">
+		DELETE board_with
+		WHERE num=#{num}
+	</delete>
+	<insert id="insert" parameterType="withBoardDto">
+		INSERT INTO board_with
+		(num,writer,title,category,content,viewCount,regdate)
+		VALUES(board_with_seq.NEXTVAL,#{writer},
+				#{title},#{category},#{content},0,SYSDATE)
+	</insert>
+	<update id="update" parameterType="withBoardDto">
+		UPDATE board_with
+		SET title=#{title}, content=#{content},category=#{category}
+		WHERE num=#{num}
+	</update>
+	<select id="getList" parameterType="withBoardDto" resultType="withBoardDto">
+		SELECT *
+		FROM
+			(SELECT result1.*, ROWNUM AS rnum
+			FROM
+				(SELECT num,writer,title,category,content,viewCount,
+					TO_CHAR(regdate, 'YY.MM.DD HH24:MI') AS regdate
+				FROM board_with
+				<choose>
+					<when test="title != null and content != null and category != null">
+						WHERE title LIKE '%'||#{title}||'%' 
+						OR content LIKE '%'||#{content}||'%'
+						OR category LIKE '%'||#{category}||'%'
+					</when>
+					<when test="title != null">
+						WHERE title LIKE '%'||#{title}||'%'
+					</when>
+					<when test="writer != null">
+						WHERE writer LIKE '%'||#{writer}||'%'
+					</when>
+					<when test="category != null">
+						WHERE category LIKE '%'||#{category}||'%'
+					</when>
+				</choose>
+				ORDER BY num DESC) result1)
+		WHERE rnum BETWEEN #{startRowNum} AND #{endRowNum}
+	</select>
+	<select id="getCount" parameterType="withBoardDto" resultType="int">
+		SELECT NVL(MAX(ROWNUM), 0)
+		FROM board_with
+		<choose>
+			<when test="title != null and content != null and category !=null">
+				WHERE title LIKE '%'||#{title}||'%' 
+				OR content LIKE '%'||#{content}||'%'
+				OR category LIKE '%'||#{category}||'%'
+			</when>
+			<when test="title != null">
+				WHERE title LIKE '%'||#{title}||'%'
+			</when>
+			<when test="writer != null">
+				WHERE writer LIKE '%'||#{writer}||'%'
+			</when>
+			<when test="category != null">
+				WHERE category LIKE '%'||#{category}||'%'
+			</when>
+		</choose>		
+	</select>
+	<select id="getData" parameterType="int" resultType="withBoardDto">
+		SELECT num,category,writer,title,content,viewCount,
+			TO_CHAR(regdate, 'YY.MM.DD HH24:MI') AS regdate
+		FROM board_with
+		WHERE num=#{num}
+	</select>
+</mapper>

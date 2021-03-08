@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!-- Mapper xml 에서 자주 사용하는 type에 별칭 부여 -->
+	<typeAliases>
+		<typeAlias type="com.team04.spring.gallery.dto.GalleryDto"
+		alias="galleryDto"/>
+		<typeAlias type="com.team04.spring.freeboard.dto.FreeBoardDto"
+		alias="freeBoardDto"/>
+		<typeAlias type="com.team04.spring.freeboard.dto.FreeCommentDto"
+		alias="freeCommentDto"/>
+		<typeAlias type="com.team04.spring.withboard.dto.WithBoardDto"
+		alias="withBoardDto"/>
+		<typeAlias type="com.team04.spring.withboard.dto.WithCommentDto"
+		alias="withCommentDto"/>
+	</typeAliases>
+
+	<!-- Mapper xml 문서 위치 설정 -->
+	<mappers>
+		<mapper resource="com/team04/spring/mybatis/GalleryMapper.xml"/>	
+		<mapper resource="com/team04/spring/mybatis/FreeBoardMapper.xml"/>
+		<mapper resource="com/team04/spring/mybatis/FreeCommentMapper.xml"/>
+		<mapper resource="com/team04/spring/mybatis/WithBoardMapper.xml"/>
+		<mapper resource="com/team04/spring/mybatis/WithCommentMapper.xml"/>
+	</mappers>
+</configuration>
